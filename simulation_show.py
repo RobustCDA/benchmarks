@@ -2,8 +2,8 @@ from simulation_core import *
 import matplotlib.pyplot as plt
 
 if __name__ == "__main__":
-    cols = 100
-    n_total = 2500  # say 10000 nodes and 2500 are honest
+    cols = 50
+    n_total = 5000  # say 10000 nodes and 2500 are honest
     n_init = 20
     n_warmup = n_total - n_init
     steps = 10000
@@ -11,7 +11,7 @@ if __name__ == "__main__":
     lifetime_per_party = n_total // churn
 
     # Range of row values to iterate over
-    row_range = [1, 5, 10, 25]
+    row_range = [5]
 
     # Define different markers and colors for each plot
     markers = ['o', 's', 'D', '^', 'v', '<', '>', 'p', '*', 'h']
