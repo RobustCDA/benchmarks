@@ -182,9 +182,9 @@ def write_rows(
 
 if __name__ == "__main__":
     N_values = [2500, 5000, 10000, 100000]
-    epsilon_nominator_values = [5]
+    epsilon_nominator_values = [5, 10]
     target_delta = 1e-9
-    k_values = [8, 16, 32]
+    k_values = [16]
 
     for k_chunks in k_values:
         for eps_nom in epsilon_nominator_values:

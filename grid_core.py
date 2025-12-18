@@ -33,6 +33,15 @@ class PartyGrid:
 
         return True
 
+    def cell_nodes(self, r: int, c: int) -> List[int]:
+        return self.grid[r][c]
+
+    def column_nodes(self, c: int) -> List[int]:
+        out = []
+        for r in range(self.k1):
+            out.extend(self.grid[r][c])
+        return out
+
     def get_cell_of_party(self, party: int) -> Optional[Tuple[int, int]]:
         """Returns the coordinates of the cell containing the given party, or None if not found."""
         return self.party_to_cell.get(party)

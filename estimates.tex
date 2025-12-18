@@ -1,0 +1,75 @@
+\documentclass{article}
+
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+\usepackage[a4paper,margin=2cm]{geometry}
+
+\begin{document}
+
+\begin{figure*}[t]
+\centering
+
+% ===================== EPS = 0.05 =====================
+
+\begin{minipage}{0.48\textwidth}
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+    width=\linewidth,
+    height=5cm,
+    xlabel={$k_2$},
+    ylabel={$k_1$},
+    title={$\epsilon = 0.05$},
+    grid=major,
+    xmode=log,
+    ymode=log,
+    mark repeat=20,
+    legend style={at={(0.5,1.15)}, anchor=south, legend columns=2},
+]
+\addplot table [x=k2,y=k1,col sep=comma] {estimates_k_16_eps5_N2500.csv};
+\addlegendentry{$N=2500$}
+
+\addplot table [x=k2,y=k1,col sep=comma] {estimates_k_16_eps5_N5000.csv};
+\addlegendentry{$N=5000$}
+
+\addplot table [x=k2,y=k1,col sep=comma] {estimates_k_16_eps5_N10000.csv};
+\addlegendentry{$N=10000$}
+
+\addplot table [x=k2,y=k1,col sep=comma] {estimates_k_16_eps5_N100000.csv};
+\addlegendentry{$N=100000$}
+\end{axis}
+\end{tikzpicture}
+\end{minipage}
+\hfill
+% ===================== EPS = 0.10 =====================
+
+\begin{minipage}{0.48\textwidth}
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+    width=\linewidth,
+    height=5cm,
+    xlabel={$k_2$},
+    ylabel={$k_1$},
+    title={$\epsilon = 0.10$},
+    grid=major,
+    xmode=log,
+    ymode=log,
+    mark repeat=20,
+]
+\addplot table [x=k2,y=k1,col sep=comma] {estimates_k_16_eps10_N2500.csv};
+
+\addplot table [x=k2,y=k1,col sep=comma] {estimates_k_16_eps10_N5000.csv};
+
+\addplot table [x=k2,y=k1,col sep=comma] {estimates_k_16_eps10_N10000.csv};
+
+\addplot table [x=k2,y=k1,col sep=comma] {estimates_k_16_eps10_N100000.csv};
+\end{axis}
+\end{tikzpicture}
+\end{minipage}
+
+\caption{Comparison of parameter selection for $k=16$: $k_1$ as a function of $k_2$ under $\epsilon=0.05$ (left) and $\epsilon=0.10$ (right) for different system sizes $N$.}
+\end{figure*}
+
+\end{document}

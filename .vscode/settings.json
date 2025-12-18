@@ -1,10 +1,12 @@
 {
-    "latex-workshop.latex.tools": [
+  "latex-workshop.latex.tools": [
     {
       "name": "latexmk",
-      "command": "/usr/local/texlive/2025/bin/universal-darwin/latexmk",
+      "command": "/Library/TeX/texbin/latexmk",
       "args": [
         "-synctex=1",
+        "-pdf",
+        "-pdflatex=/Library/TeX/texbin/pdflatex",
         "-interaction=nonstopmode",
         "-file-line-error",
         "-pdf",
@@ -23,6 +25,6 @@
 
   // ✅ (Optional) explicitly prepend TeX Live to PATH inside VS Code
   "terminal.integrated.env.osx": {
-    "PATH": "/usr/local/texlive/2025/bin/universal-darwin:${env:PATH}"
+    "PATH": "/Library/TeX/texbin/latexmk:${env:PATH}"
   }
 }
