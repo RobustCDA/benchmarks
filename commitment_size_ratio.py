@@ -1,25 +1,29 @@
-import math
-import matplotlib.pyplot as plt
+import csv
 
-CELL_SIZE = 512          # bytes per cell
-COMMITMENT_UNIT_SIZE = 48  # bytes per commitment
+CELL_SIZE = 2048           # bytes
+COMMITMENT_UNIT_SIZE = 48  # bytes
 
-n_values = list(range(8, 513, 8))
-chunk_sizes = [2, 4, 8, 16]
+n_values = list(range(8, 257, 8))
+fragment_sizes = [1, 8, 16, 32]
 
-plt.figure()
+with open("results/commitment_size/commitment_benchmark.csv", "w", newline="") as f:
+    writer = csv.writer(f)
+    writer.writerow([
+        "n",
+        "ratio_f1",
+        "ratio_f8",
+        "ratio_f16",
+        "ratio_f32"
+    ])
 
-for chunk_size in chunk_sizes:
-    ratios = []
     for n in n_values:
         block_size = (n * n) * CELL_SIZE
-        commitment_size = n * (chunk_size + 1) * COMMITMENT_UNIT_SIZE
-        ratio = commitment_size / block_size
-        ratios.append(ratio)
-    plt.plot(n_values, ratios, label=f"chunk_size={chunk_size}")
 
-plt.xlabel("n (matrix dimension, block = n x n cells)")
-plt.ylabel("Commitment Size / Block Size")
-plt.title("Commitment Size Ratio vs Block Size (varying n and chunk_size)")
-plt.legend()
-plt.show()
+        ratios = []
+        for fsize in fragment_sizes:
+            commitment_size = n * fsize * COMMITMENT_UNIT_SIZE
+            ratios.append(commitment_size / block_size)
+
+        writer.writerow([n] + ratios)
+
+print("Wrote commitment_benchmark.csv")

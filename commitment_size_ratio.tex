@@ -1,0 +1,54 @@
+\documentclass{article}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage[a4paper,margin=0.4cm]{geometry}
+
+\begin{document}
+
+\begin{figure*}[t]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+    width=0.45\textwidth, % Khớp với tỉ lệ hình mẫu
+    height=6cm,
+    grid=major,
+    grid style={dashed, gray!30}, % Khớp kiểu grid
+    xlabel={$N$ (erasure block has $N \times N$ cells)},
+    ylabel={},
+    tick label style={font=\small},
+    label style={font=\small},
+    title={Commitment Size Per Block Size},
+    title style={font=\small},
+    % Cấu hình Legend chuẩn "Legendary"
+    legend style={
+        draw=black,
+        fill=white,
+        fill opacity=0.9,
+        text opacity=1,
+        at={(0.97,0.97)},
+        anchor=north east,
+        font=\scriptsize,
+        row sep=-2pt,
+        cells={anchor=west}
+    },
+]
+\addplot+[blue, solid, mark=*, mark size=1pt, mark repeat=5]
+table[x=n, y=ratio_f1, col sep=comma]{results/commitment_size/commitment_benchmark.csv};
+\addlegendentry{$k = 1$}
+
+\addplot+[red, solid, mark=square*, mark size=1pt, mark repeat=5]
+table[x=n, y=ratio_f8, col sep=comma]{results/commitment_size/commitment_benchmark.csv};
+\addlegendentry{$k = 8$}
+
+\addplot+[brown, solid, mark=triangle*, mark size=1pt, mark repeat=5]
+table[x=n, y=ratio_f16, col sep=comma]{results/commitment_size/commitment_benchmark.csv};
+\addlegendentry{$k = 16$}
+
+\addplot+[green!60!black, solid, mark=diamond*, mark size=1pt, mark repeat=5]
+table[x=n, y=ratio_f32, col sep=comma]{results/commitment_size/commitment_benchmark.csv};
+\addlegendentry{$k = 32$}
+\end{axis}
+\end{tikzpicture}
+\end{figure*}
+
+\end{document}

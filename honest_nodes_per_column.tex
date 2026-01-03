@@ -1,0 +1,54 @@
+\documentclass{article}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage[a4paper,margin=0.4cm]{geometry}
+
+\begin{document}
+
+\begin{figure*}[t]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+    width=0.45\textwidth,
+    height=6cm,
+    grid=major,
+    grid style={dashed, gray!30},
+    xlabel={Time Steps},
+    ylabel={Min Honest Nodes},
+    tick label style={font=\small},
+    label style={font=\small},
+    title={Min Honest Nodes Per Columns},
+    title style={font=\small},
+    % Cấu hình Legend góc dưới bên phải như ảnh bạn gửi
+    legend style={
+        draw=black,
+        fill=white,
+        fill opacity=0.9,
+        text opacity=1,
+        at={(0.97,0.03)},
+        anchor=south east,
+        font=\scriptsize,
+        row sep=-2pt,
+        cells={anchor=west}
+    },
+]
+\addplot+[blue, solid, mark=*, mark size=1pt, mark repeat=50] 
+table[x=step, y=rows_1, col sep=comma] {results/honest_nodes_per_column/protocol_results.csv};
+\addlegendentry{$k_1 = 1$}
+
+\addplot+[red, solid, mark=square*, mark size=1pt, mark repeat=50] 
+table[x=step, y=rows_5, col sep=comma] {results/honest_nodes_per_column/protocol_results.csv};
+\addlegendentry{$k_1 = 5$}
+
+\addplot+[brown, solid, mark=triangle*, mark size=1pt, mark repeat=50] 
+table[x=step, y=rows_10, col sep=comma] {results/honest_nodes_per_column/protocol_results.csv};
+\addlegendentry{$k_1 = 10$}
+
+\addplot+[green!60!black, solid, mark=diamond*, mark size=1pt, mark repeat=50] 
+table[x=step, y=rows_25, col sep=comma] {results/honest_nodes_per_column/protocol_results.csv};
+\addlegendentry{$k_1 = 25$}
+\end{axis}
+\end{tikzpicture}
+\end{figure*}
+
+\end{document}

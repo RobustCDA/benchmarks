@@ -1,7 +1,6 @@
 import math
 import csv
-
-PARAMS_SIZE = 4
+from constants import CELL_SIZE, PROOF_SIZE, N_SIZE, SECONDS_PER_ROUND, T_ROUNDS, DELTA_OVERLAP_ROUNDS, DELTA_OVERLAP_MIN_ROUNDS, DELTA_OVERLAP_MIN_SYNC_ROUNDS
 
 def binary_entropy(epsilon: float) -> float:
     """
@@ -32,11 +31,11 @@ def calculate_rhs(
     k1: int,
     k2: int,
     epsilon: float,
-    N: int
+    M_hon: int
 ) -> float:
     """
     Calculates the right hand side of the inequality:
-    δ ≤ δ_SD + ⌈(T+3)/(Δ_overlap - Δ_overlap,min + 1)⌉ · (k₁2^(h(ε)k₂)e^(-εN/k₁) + k₂e^(-N/k₂))
+    δ ≤ δ_SD + ⌈(T+3)/(Δ_overlap - Δ_overlap,min + 1)⌉ · (k₁2^(h(ε)k₂)e^(-εM_hon/k₁) + k₂e^(-M_hon/k₂))
 
     Args:
         delta_sd: The δ_SD value
@@ -46,7 +45,7 @@ def calculate_rhs(
         k1: k₁ parameter
         k2: k₂ parameter
         epsilon: ε parameter
-        N: N parameter
+        M_hon: M_hon parameter
 
     Returns:
         The calculated right hand side value
@@ -61,36 +60,27 @@ def calculate_rhs(
 
     # Calculate the exponential terms
     term1_base2 = pow(2, h_epsilon * k2)
-    term1_exp_e = math.exp(-epsilon * N / k1)
+    term1_exp_e = math.exp(-epsilon * M_hon / k1)
     exp_term1 = k1 * term1_base2 * term1_exp_e
 
-    exp_term2 = k2 * math.exp(-N / k2)
+    exp_term2 = k2 * math.exp(-M_hon / k2)
 
     # Put it all together
     return delta_sd + ceiling_term * (exp_term1 + exp_term2)
 
-def find_max_k1(k2: int, epsilon: float, N: int, target_delta: float = 1e-9) -> int:
+def find_max_k1(k2: int, epsilon: float, M_hon: int, target_delta: float = 1e-9) -> int:
     """
     Finds the largest value of k1 that keeps the estimate below target_delta using binary search.
 
     Args:
         k2: k₂ parameter
         epsilon: ε parameter
-        N: N parameter
+        M_hon: M_hon parameter
         target_delta: Target upper bound (default: 10^-9)
 
     Returns:
         The largest valid k1 value
     """
-    # Time parameters (fixed as per requirements)
-    SECONDS_PER_ROUND = 4
-    SECONDS_PER_HOUR = 3600
-    SECONDS_PER_YEAR = 31557600
-
-    T_rounds = int(10 * SECONDS_PER_YEAR / SECONDS_PER_ROUND)
-    delta_overlap_rounds = int(6 * SECONDS_PER_HOUR / SECONDS_PER_ROUND)
-    delta_overlap_min_rounds = 4
-
     # Binary search for k1
     left, right = 1, 10000  # Reasonable range for k1
     best_k1 = None
@@ -99,13 +89,13 @@ def find_max_k1(k2: int, epsilon: float, N: int, target_delta: float = 1e-9) -> 
         mid = (left + right) // 2
         result = calculate_rhs(
             delta_sd=0.0,
-            T=T_rounds,
-            delta_overlap=delta_overlap_rounds,
-            delta_overlap_min=delta_overlap_min_rounds,
+            T=T_ROUNDS,
+            delta_overlap=DELTA_OVERLAP_ROUNDS,
+            delta_overlap_min=DELTA_OVERLAP_MIN_ROUNDS,
             k1=mid,
             k2=k2,
             epsilon=epsilon,
-            N=N
+            M_hon=M_hon
         )
 
         if result <= target_delta:
@@ -118,27 +108,18 @@ def find_max_k1(k2: int, epsilon: float, N: int, target_delta: float = 1e-9) -> 
 
     return best_k1
 
-def find_max_k2_with_k1_1(epsilon: float, N: int, target_delta: float = 1e-9) -> int:
+def find_max_k2_with_k1_1(epsilon: float, M_hon: int, target_delta: float = 1e-9) -> int:
     """
     Finds the largest value of k2 that keeps the estimate below target_delta when k1=1 using binary search.
 
     Args:
         epsilon: ε parameter
-        N: N parameter
+        M_hon: M_hon parameter
         target_delta: Target upper bound (default: 10^-9)
 
     Returns:
         The largest valid k2 value
     """
-    # Time parameters (fixed as per requirements)
-    SECONDS_PER_ROUND = 4
-    SECONDS_PER_HOUR = 3600
-    SECONDS_PER_YEAR = 31557600
-
-    T_rounds = int(10 * SECONDS_PER_YEAR / SECONDS_PER_ROUND)
-    delta_overlap_rounds = int(6 * SECONDS_PER_HOUR / SECONDS_PER_ROUND)
-    delta_overlap_min_rounds = 30 * 60 / SECONDS_PER_ROUND # say roughly 15 minutes for sync
-
     # Binary search for k2
     left, right = 1, 2000  # Increased range for k2
     best_k2 = None
@@ -147,13 +128,13 @@ def find_max_k2_with_k1_1(epsilon: float, N: int, target_delta: float = 1e-9) ->
         mid = (left + right) // 2
         result = calculate_rhs(
             delta_sd=0.0,
-            T=T_rounds,
-            delta_overlap=delta_overlap_rounds,
-            delta_overlap_min=delta_overlap_min_rounds,
+            T=T_ROUNDS,
+            delta_overlap=DELTA_OVERLAP_ROUNDS,
+            delta_overlap_min=DELTA_OVERLAP_MIN_SYNC_ROUNDS,
             k1=1,  # Fixed to 1
             k2=mid,
             epsilon=epsilon,
-            N=N
+            M_hon=M_hon
         )
 
         if result <= target_delta:
@@ -166,120 +147,91 @@ def find_max_k2_with_k1_1(epsilon: float, N: int, target_delta: float = 1e-9) ->
 
     return best_k2
 
-def calculate_joining_complexity(k1: int, k2: int, n_max: int, n_bs: int = 100, t: int = 50, L_msg: int = 1) -> float:
+def calculate_historical_sync_cost(k1: int, k2: int, m_hon_max: int) -> float:
     """
-    Calculates the complexity of the Join operation.
+    Calculates historical synchronization cost of the Join operation.
 
     Args:
         k1: k₁ parameter
         k2: k₂ parameter
-        n_max: maximum number of nodes
-        n_bs: total number of nodes (default: 100)
-        t: used number of bootstrap nodes (default: 50)
-        L_msg: message length (default: 1)
+        m_hon_max: total number of honest nodes
+
+    Formula:
+        hon_nodes_in_column * part_size
 
     Returns:
-        The Join operation complexity
+        Historical synchronization cost of one part in an erasure_block
     """
-    term1 = 3 * t
-    term2 = t * n_bs
-    term3 = (t * n_max) / k1
-    term4 = ((t + 4) * n_max * k2 - 2 * n_max + n_max * n_max) / (k2 * k2)
-    return (term1 + term2 + term3 + term4) * 1
+    hon_nodes_in_column= m_hon_max / k2 # honest in a column
+    chunks_in_part = N_SIZE / k2
+    part_size = (CELL_SIZE + PROOF_SIZE) * chunks_in_part
+    return hon_nodes_in_column * part_size
 
-def calculate_get_complexity(k1: int, k2: int, n_max: int, n_hon_max: int, L_msg: int = 1) -> float:
+def calculate_probagation_cost(k1: int, k2: int, m_max: int, m_hon_max: int) -> float:
     """
-    Calculates the complexity of the Get operation.
+    Calculates the expected cost when probagating an erasure block to all nodes.
 
-    Args:
-        k1: k₁ parameter
-        k2: k₂ parameter
-        n_max: maximum number of nodes
-        n_hon_max: maximum number of honest nodes
-        L_msg: message length (default: 1)
-
-    Returns:
-        The Get operation complexity
+    Formula:
+        Probagation_cost_one_part = nodes_in_cell * (part_size) + hon_nodes_in_cell * nodes_in_column * (coded_part_size)
     """
-    proof_size = 48
-    term1 = n_max / (k1 * k2)
-    term2 = (n_hon_max) / (k1 * k2)
-    return term1 * PARAMS_SIZE + term2 * (L_msg + proof_size + PARAMS_SIZE)
+    nodes_in_cell = m_max / (k1 * k2) # honest in a cell
+    nodes_in_column = m_max / k2 # honest in a column
+    hon_nodes_in_cell = m_hon_max / (k1 * k2) # honest in a cell
+    chunks_in_part = N_SIZE / k2
 
-def calculate_store_complexity(k1: int, k2: int, n_max: int, n_hon_max: int, L_msg: int = 1) -> float:
-    """
-    Calculates the complexity of the Store operation.
+    chunk_size = (CELL_SIZE + PROOF_SIZE) * N_SIZE
+    part_size = chunk_size * chunks_in_part # chunk size = (CELL_SIZE + PROOF_SIZE) * N_SIZE
+    
+    total_part = k2
+    return (nodes_in_cell * (part_size) + hon_nodes_in_cell * nodes_in_column * (part_size)) * total_part
 
-    Args:
-        k1: k₁ parameter
-        k2: k₂ parameter
-        n_max: maximum number of nodes
-        n_hon_max: maximum number of honest nodes
-        L_msg: message length (default: 1)
-
-    Returns:
-        The Store operation complexity
-    """
-    proof_size = 48
-    term1 = n_max / (k1 * k2) # honest in a cell
-    term2 = (n_max / k2) * term1 # honest in a column * honest in a cell
-    return (term1 + term2) * (L_msg + proof_size + PARAMS_SIZE)
-
-
-
-def generate_rows(epsilon: float, N: int, target_delta: float = 1e-9):
+def generate_rows(epsilon: float, M: int, target_delta: float = 1e-9):
     """
     Generates a list of tuples (k2, k1, data complexity, join complexity, get complexity, store complexity), such that
     (k1,k2) yield the target error probability delta and the given complexities.
     For each k2 from max possible down to 1, the function takes the maximum k1
     that yields the desired error.
     """
+    m_max = M
+    m_hon_max = M / 2
 
     # First find the maximum k2 possible with k1=1
-    max_k2 = find_max_k2_with_k1_1(epsilon, N, target_delta)
+    max_k2 = find_max_k2_with_k1_1(epsilon, m_hon_max, target_delta)
     if max_k2 is None:
         return []
-
-    n_max = 2 * N
-    n_hon_max = N
 
     rows = []
     # For each k2 value from max down to 1
     for k2 in range(max_k2, 0, -1):
-        k1 = find_max_k1(k2, epsilon, N, target_delta)
+        k1 = find_max_k1(k2, epsilon, m_hon_max, target_delta)
         if k1 is not None:
-            # we have found a valid k1, now compute complexities
-            data_duplication = N / (k2) 
-            join_complexity = calculate_joining_complexity(k1, k2, n_max)
-            get_complexity = calculate_get_complexity(k1, k2, n_max, n_hon_max)
-            store_complexity = calculate_store_complexity(k1, k2, n_max, n_hon_max, L_msg=512)
-            rows.append((epsilon, N, k2, k1, data_duplication, store_complexity, get_complexity, join_complexity))
+            replication_factor = m_hon_max / (k2)
+            historical_synchronization_complexity = calculate_historical_sync_cost(k1, k2, m_hon_max)
+            probagation_complexity = calculate_probagation_cost(k1, k2, m_max, m_hon_max)
+            rows.append((epsilon, M, k2, k1, replication_factor, probagation_complexity, historical_synchronization_complexity))
     return rows
 
-
-
 if __name__ == "__main__":
-
-    headers = ["epsilon", "N", "k2", "k1", "data_duplication", "store_complexity", "get_complexity", "join_complexity"]
-    N_values = [2500, 5000, 10000]
+    headers = ["epsilon", "M", "k2", "k1", "replication_factor", "probagation_complexity", "historical_synchronization_complexity"]
+    M_values = [5000, 10000, 20000]
     epsilon_nominator_values = [5, 10]
     target_delta = 1e-9
 
     for eps_nom in epsilon_nominator_values:
-        for N in N_values:
+        for M in M_values:
             eps = eps_nom / 100
-            rows = generate_rows(eps, N, target_delta)
+            rows = generate_rows(eps, M, target_delta)
 
             if not rows:
-                print(f"[WARN] No data for eps={eps}, N={N}")
+                print(f"[WARN] No data for eps={eps}, M={M}")
                 continue
 
-            filename = f"results/rda/estimates_data_eps{eps_nom}_N{N}.csv"
+            filename = f"results/rda/estimates_data_eps{eps_nom}_M{M}.csv"
 
             clean_rows = [
                 row for row in rows
                 if row is not None
-                and len(row) == 8
+                and len(row) == 7
                 and all(v is not None for v in row)
             ]
 
