@@ -28,13 +28,10 @@ python commitment_size_ratio.py
 python honest_nodes_per_column.py
 ```
 
-Build PDFs from LaTeX (requires `pdflatex` + `pgfplots`):
+Main results PDFs from LaTeX (requires `pdflatex` + `pgfplots`), other is for simulation plots:
 
 ```bash
-pdflatex estimate_params.tex
-pdflatex rda_simulate_params.tex
-pdflatex cda_simulate_params_eps5.tex
-pdflatex cda_simulate_params_eps10.tex
+pdflatex prod_estimate_params.tex
 pdflatex commitment_size_ratio.tex
 pdflatex honest_nodes_per_column.tex
 ```

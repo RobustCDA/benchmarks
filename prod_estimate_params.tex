@@ -1,0 +1,173 @@
+\documentclass{article}
+
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage[a4paper,margin=0.4cm]{geometry}
+\usepgfplotslibrary{groupplots}
+\usetikzlibrary{calc}
+
+% ================= COLOR + MARKER CYCLE =================
+\pgfplotscreateplotcyclelist{crda_rda_cycle}{
+% --- CDA ---
+{blue,   solid,  mark=*},
+% {red,    solid,  mark=square*},
+% {brown,  solid,  mark=triangle*},
+% --- RDA ---
+{green!60!black,  solid, mark=*},
+% {gray,   solid, mark=square*},
+% {purple, solid, mark=triangle*},
+}
+
+\begin{document}
+
+\begin{figure*}[t]
+\centering
+
+\begin{tikzpicture}
+\begin{groupplot}[
+    group style={
+        group size=2 by 4,
+        horizontal sep=1.6cm,
+        vertical sep=2.0cm,
+        group name=epsgroup,
+    },
+    width=0.4\textwidth,
+    height=5.5cm,
+    grid=major,
+    grid style={dashed, gray!30},
+    xmode=log,
+    ymode=log,
+    cycle list name=crda_rda_cycle,
+    legend style={
+        draw=black,
+        fill=white,
+        fill opacity=0.9,
+        text opacity=1,
+        at={(0.97,0.97)},
+        anchor=north east,
+        font=\scriptsize,
+        row sep=-2pt
+    }
+]
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ===================== EPS = 0.05 ========================
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% -------- k1 vs k2 (CDA side) --------
+% \nextgroupplot[
+%     xlabel={$k_2$},
+%     ylabel={},
+%     title={$k_1$},
+% ]
+% \addplot+[mark repeat=20] table[x=k2,y=k1,col sep=comma]{results/cda/estimates_k_16_eps10_M5000.csv};
+% \addplot+[mark repeat=20] table[x=k2,y=k1,col sep=comma]{results/cda/estimates_k_16_eps10_M10000.csv};
+% \addplot+[mark repeat=20] table[x=k2,y=k1,col sep=comma]{results/cda/estimates_k_16_eps10_M20000.csv};
+% \addplot+[draw=none, mark=none, forget plot] table[x=k2,y=k1,col sep=comma]{results/rda/estimates_data_eps10_M5000.csv};
+% \addplot+[draw=none, mark=none, forget plot] table[x=k2,y=k1,col sep=comma]{results/rda/estimates_data_eps10_M10000.csv};
+% \addplot+[draw=none, mark=none, forget plot] table[x=k2,y=k1,col sep=comma]{results/rda/estimates_data_eps10_M20000.csv};
+% \legend{CDA $M=5k$, CDA $M=10k$, CDA $M=20k$}
+
+% -------- k1 vs k2 (RDA side) --------
+% \nextgroupplot[
+%     xlabel={$k_2$},
+%     ylabel={},
+%     title={$k_1$},
+%     cycle list shift=3,
+% ]
+% \addplot+[draw=none, mark=none, forget plot] table[x=k2,y=k1,col sep=comma]{results/cda/estimates_k_16_eps10_M5000.csv};
+% \addplot+[draw=none, mark=none, forget plot] table[x=k2,y=k1,col sep=comma]{results/cda/estimates_k_16_eps10_M10000.csv};
+% \addplot+[draw=none, mark=none, forget plot] table[x=k2,y=k1,col sep=comma]{results/cda/estimates_k_16_eps10_M20000.csv};
+% \addplot+[mark repeat=20] table[x=k2,y=k1,col sep=comma]{results/rda/estimates_data_eps10_M5000.csv};
+% \addplot+[mark repeat=20] table[x=k2,y=k1,col sep=comma]{results/rda/estimates_data_eps10_M10000.csv};
+% \addplot+[mark repeat=20] table[x=k2,y=k1,col sep=comma]{results/rda/estimates_data_eps10_M20000.csv};
+% \legend{RDA $M=5k$, RDA $M=10k$, RDA $M=20k$}
+
+% -------- Duplication (CDA) --------
+\nextgroupplot[xlabel={$k_2$}, ylabel={}, title={Replication Factor}]
+\addplot+[mark repeat=20] table[x=k2,y=replication_factor,col sep=comma]{results/cda/estimates_k_16_eps10_M5000.csv};
+% \addplot+[mark repeat=20] table[x=k2,y=replication_factor,col sep=comma]{results/cda/estimates_k_16_eps10_M10000.csv};
+% \addplot+[mark repeat=20] table[x=k2,y=replication_factor,col sep=comma]{results/cda/estimates_k_16_eps10_M20000.csv};
+\addplot+[mark repeat=20] table[x=k2,y=replication_factor,col sep=comma]{results/rda/estimates_data_eps10_M5000.csv};
+% \addplot+[mark repeat=20] table[x=k2,y=replication_factor,col sep=comma]{results/rda/estimates_data_eps10_M10000.csv};
+% \addplot+[draw=none, mark=none, forget plot] table[x=k2,y=replication_factor,col sep=comma]{results/rda/estimates_data_eps10_M20000.csv};
+\legend{CDA, RDA}
+
+% -------- Duplication (RDA) --------
+\nextgroupplot[xlabel={$k_2$}, ylabel={}, title={Replication Factor}]
+% \addplot+[draw=none, mark=none, forget plot] table[x=k2,y=replication_factor,col sep=comma]{results/cda/estimates_k_16_eps10_M5000.csv};
+\addplot+[mark repeat=20] table[x=k2,y=replication_factor,col sep=comma]{results/cda/estimates_k_16_eps10_M10000.csv};
+% \addplot+[draw=none, mark=none, forget plot] table[x=k2,y=replication_factor,col sep=comma]{results/cda/estimates_k_16_eps10_M20000.csv};
+% \addplot+[mark repeat=20] table[x=k2,y=replication_factor,col sep=comma]{results/rda/estimates_data_eps10_M5000.csv};
+\addplot+[mark repeat=20] table[x=k2,y=replication_factor,col sep=comma]{results/rda/estimates_data_eps10_M10000.csv};
+% \addplot+[mark repeat=20] table[x=k2,y=replication_factor,col sep=comma]{results/rda/estimates_data_eps10_M20000.csv};
+\legend{CDA, RDA}
+
+% -------- Probagation Cost (CDA) --------
+\nextgroupplot[xlabel={$k_2$}, ylabel={}, title={Probagation Cost}]
+\addplot+[mark repeat=20] table[x=k2,y=probagation_complexity,col sep=comma]{results/cda/estimates_k_16_eps10_M5000.csv};
+% \addplot+[mark repeat=20] table[x=k2,y=probagation_complexity,col sep=comma]{results/cda/estimates_k_16_eps10_M10000.csv};
+% \addplot+[mark repeat=20] table[x=k2,y=probagation_complexity,col sep=comma]{results/cda/estimates_k_16_eps10_M20000.csv};
+\addplot+[mark repeat=20] table[x=k2,y=probagation_complexity,col sep=comma]{results/rda/estimates_data_eps10_M5000.csv};
+% \addplot+[draw=none, mark=none, forget plot] table[x=k2,y=probagation_complexity,col sep=comma]{results/rda/estimates_data_eps10_M10000.csv};
+% \addplot+[draw=none, mark=none, forget plot] table[x=k2,y=probagation_complexity,col sep=comma]{results/rda/estimates_data_eps10_M20000.csv};
+\legend{CDA, RDA}
+
+
+% -------- Probagation Cost (RDA) --------
+\nextgroupplot[xlabel={$k_2$}, ylabel={}, title={Probagation Cost}, cycle list shift=3]
+% \addplot+[draw=none, mark=none, forget plot] table[x=k2,y=probagation_complexity,col sep=comma]{results/cda/estimates_k_16_eps10_M5000.csv};
+\addplot+[mark repeat=20] table[x=k2,y=probagation_complexity,col sep=comma]{results/cda/estimates_k_16_eps10_M10000.csv};
+% \addplot+[draw=none, mark=none, forget plot] table[x=k2,y=probagation_complexity,col sep=comma]{results/cda/estimates_k_16_eps10_M20000.csv};
+% \addplot+[mark repeat=20] table[x=k2,y=probagation_complexity,col sep=comma]{results/rda/estimates_data_eps10_M5000.csv};
+\addplot+[mark repeat=20] table[x=k2,y=probagation_complexity,col sep=comma]{results/rda/estimates_data_eps10_M10000.csv};
+% \addplot+[mark repeat=20] table[x=k2,y=probagation_complexity,col sep=comma]{results/rda/estimates_data_eps10_M20000.csv};
+\legend{CDA, RDA}
+
+
+% -------- Historical Synchronization Cost (CDA) --------
+\nextgroupplot[xlabel={$k_2$}, ylabel={}, title={Historical Synchronization Cost}]
+\addplot+[mark repeat=20] table[x=k2,y=historical_synchronization_complexity,col sep=comma]{results/cda/estimates_k_16_eps10_M5000.csv};
+% \addplot+[mark repeat=20] table[x=k2,y=historical_synchronization_complexity,col sep=comma]{results/cda/estimates_k_16_eps10_M10000.csv};
+% \addplot+[mark repeat=20] table[x=k2,y=historical_synchronization_complexity,col sep=comma]{results/cda/estimates_k_16_eps10_M20000.csv};
+\addplot+[mark repeat=20] table[x=k2,y=historical_synchronization_complexity,col sep=comma]{results/rda/estimates_data_eps10_M5000.csv};
+% \addplot+[draw=none, mark=none, forget plot] table[x=k2,y=historical_synchronization_complexity,col sep=comma]{results/rda/estimates_data_eps10_M10000.csv};
+% \addplot+[draw=none, mark=none, forget plot] table[x=k2,y=historical_synchronization_complexity,col sep=comma]{results/rda/estimates_data_eps10_M20000.csv};
+\legend{CDA, RDA}
+
+
+% % -------- Historical Synchronization Cost (RDA) --------
+\nextgroupplot[xlabel={$k_2$}, ylabel={}, title={Historical Synchronization Cost}, cycle list shift=3]
+% \addplot+[draw=none, mark=none, forget plot] table[x=k2,y=historical_synchronization_complexity,col sep=comma]{results/cda/estimates_k_16_eps10_M5000.csv};
+\addplot+[mark repeat=20] table[x=k2,y=historical_synchronization_complexity,col sep=comma]{results/cda/estimates_k_16_eps10_M10000.csv};
+% \addplot+[draw=none, mark=none, forget plot] table[x=k2,y=historical_synchronization_complexity,col sep=comma]{results/cda/estimates_k_16_eps10_M20000.csv};
+% \addplot+[mark repeat=20] table[x=k2,y=historical_synchronization_complexity,col sep=comma]{results/rda/estimates_data_eps10_M5000.csv};
+\addplot+[mark repeat=20] table[x=k2,y=historical_synchronization_complexity,col sep=comma]{results/rda/estimates_data_eps10_M10000.csv};
+% \addplot+[mark repeat=20] table[x=k2,y=historical_synchronization_complexity,col sep=comma]{results/rda/estimates_data_eps10_M20000.csv};
+\legend{CDA, RDA}
+
+
+\end{groupplot}
+
+% \node[font=\bfseries, yshift=25mm] at
+%   ($ (epsgroup c1r1.east)!0.5!(epsgroup c2r1.west) $)
+%   {$\epsilon = 0.1$};
+
+% \node[font=\bfseries, yshift=25mm] at
+% ($ (epsgroup c1r2.east)!0.5!(epsgroup c2r2.west) $)
+% {$\epsilon = 0.1$};
+
+% \node[font=\bfseries, yshift=25mm] at
+%   ($ (epsgroup c1r3.east)!0.5!(epsgroup c2r3.west) $)
+%   {$\epsilon = 0.1$};
+
+% \node[font=\bfseries, yshift=25mm] at
+% ($ (epsgroup c1r4.east)!0.5!(epsgroup c2r4.west) $)
+% {$\epsilon = 0.10$};
+
+\end{tikzpicture}
+
+\caption{Comparison of CDA and RDA metrics with legendary in-plot boxes.}
+\end{figure*}
+
+\end{document}
