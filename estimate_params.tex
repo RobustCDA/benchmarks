@@ -104,7 +104,7 @@
 \legend{RDA $M=5k$, RDA $M=10k$, RDA $M=20k$}
 
 % -------- Probagation Cost (CDA) --------
-\nextgroupplot[xlabel={$k_2$}, ylabel={}, title={Probagation Cost}]
+\nextgroupplot[xlabel={$k_2$}, ylabel={}, title={Propagation Cost}]
 \addplot+[mark repeat=20] table[x=k2,y=probagation_complexity,col sep=comma]{results/cda/estimates_k_16_eps10_M5000.csv};
 \addplot+[mark repeat=20] table[x=k2,y=probagation_complexity,col sep=comma]{results/cda/estimates_k_16_eps10_M10000.csv};
 \addplot+[mark repeat=20] table[x=k2,y=probagation_complexity,col sep=comma]{results/cda/estimates_k_16_eps10_M20000.csv};
@@ -114,7 +114,7 @@
 \legend{CDA $M=5k$, CDA $M=10k$, CDA $M=20k$}
 
 % -------- Probagation Cost (RDA) --------
-\nextgroupplot[xlabel={$k_2$}, ylabel={}, title={Probagation Cost}, cycle list shift=3]
+\nextgroupplot[xlabel={$k_2$}, ylabel={}, title={Propagation Cost}, cycle list shift=3]
 \addplot+[draw=none, mark=none, forget plot] table[x=k2,y=probagation_complexity,col sep=comma]{results/cda/estimates_k_16_eps10_M5000.csv};
 \addplot+[draw=none, mark=none, forget plot] table[x=k2,y=probagation_complexity,col sep=comma]{results/cda/estimates_k_16_eps10_M10000.csv};
 \addplot+[draw=none, mark=none, forget plot] table[x=k2,y=probagation_complexity,col sep=comma]{results/cda/estimates_k_16_eps10_M20000.csv};

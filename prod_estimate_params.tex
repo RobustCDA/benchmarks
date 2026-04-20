@@ -59,14 +59,14 @@
 \legend{CDA, RDA}
 
 % -------- Probagation Cost (CDA) --------
-\nextgroupplot[xlabel={$k_2$}, ylabel={}, title={Probagation Cost}]
+\nextgroupplot[xlabel={$k_2$}, ylabel={}, title={Propagation Cost}]
 \addplot+[mark repeat=20] table[x=k2,y=probagation_complexity,col sep=comma]{results/cda/estimates_k_16_eps10_M5000.csv};
 \addplot+[mark repeat=20] table[x=k2,y=probagation_complexity,col sep=comma]{results/rda/estimates_data_eps10_M5000.csv};
 \legend{CDA, RDA}
 
 
 % -------- Probagation Cost (RDA) --------
-\nextgroupplot[xlabel={$k_2$}, ylabel={}, title={Probagation Cost}, cycle list shift=3]
+\nextgroupplot[xlabel={$k_2$}, ylabel={}, title={Propagation Cost}, cycle list shift=3]
 \addplot+[mark repeat=20] table[x=k2,y=probagation_complexity,col sep=comma]{results/cda/estimates_k_16_eps10_M10000.csv};
 \addplot+[mark repeat=20] table[x=k2,y=probagation_complexity,col sep=comma]{results/rda/estimates_data_eps10_M10000.csv};
 \legend{CDA, RDA}
